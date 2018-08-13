@@ -1,0 +1,14 @@
+{
+  "name": "ticket4sale",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "cp web/src/main/webapp/index.html web/src/main/resources/ && ./node_modules/.bin/elm-make web/src/main/webapp/index.elm --output=web/src/main/resources/index.js --yes"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "create-elm-app": "^1.8.0"
+  }
+}
