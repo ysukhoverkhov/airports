@@ -1,39 +1,55 @@
 package com.example.airports.persistence.memorystoragealg
 
-import cats.{Eval, Monad}
+import java.util.concurrent.atomic.AtomicBoolean
+
 import cats.data.EitherT
+import cats.effect.IO
 import cats.implicits._
 import com.example.airports.domain.{ErrorReason, _}
 import com.example.airports.persistence.{MemoryStorageAlg, SourceAlg}
 import zamblauskas.csv.parser._
 
-// Storage implementation for CSV data sources
-class MemoryStorageCSVInterpreter[F[_]: Monad](
-  countries: SourceAlg[F],
-  airports: SourceAlg[F],
-  runways: SourceAlg[F]) extends MemoryStorageAlg[F] {
+import scala.concurrent.{ExecutionContext, Promise}
 
-  override def data: F[Either[ErrorReason, Data]] = {
-    (for {
+// Storage implementation for CSV data sources
+class MemoryStorageCSVInterpreter(
+  countries: SourceAlg[IO],
+  airports: SourceAlg[IO],
+  runways: SourceAlg[IO])(
+    implicit private val ec: ExecutionContext
+  ) extends MemoryStorageAlg[IO] {
+
+  private val triggered = new AtomicBoolean(false)
+  private val dataCache = Promise[Either[ErrorReason, Data]]()
+
+  override def data: EitherT[IO, ErrorReason, Data] = {
+    EitherT {
+      IO.suspend {
+        if (!triggered.getAndSet(true)) {
+          dataCache.completeWith(dataFetch.value.unsafeToFuture)
+        }
+        IO.fromFuture[Either[ErrorReason, Data]](IO(dataCache.future))
+      }
+    }
+  }
+
+  private def dataFetch: EitherT[IO, ErrorReason, Data] = {
+    for {
       countries <- parse[CountryInCsv, Country](countries, parseCountry)
       airports <- parse[AirportInCsv, Airport](airports, parseAirport)
       runways <- parse[RunwayInCsv, Runway](runways, parseRunway)
     } yield {
       Data(countries, airports, runways)
-    }).value
+    }
   }
 
-  private def parse[I, O](src: SourceAlg[F], parser: I => O)(implicit cr: ColumnReads[I]): EitherT[F, ErrorReason, Seq[O]] = {
-    val rv = src.source.map { csv =>
-      for {
-        csv <- csv
-        entries <- Parser.parse[I](csv).leftMap(e => ErrorReason.fromString(reason = s"${e.message} at ${e.lineNum}"))
-      } yield {
-        entries.map(parser)
-      }
+  private def parse[I, O](src: SourceAlg[IO], parser: I => O)(implicit cr: ColumnReads[I]): EitherT[IO, ErrorReason, Seq[O]] = {
+    for {
+      csv <- src.source
+      entries <- EitherT.fromEither[IO](Parser.parse[I](csv).leftMap(e => ErrorReason.fromString(reason = s"${e.message} at ${e.lineNum}")))
+    } yield {
+      entries.map(parser)
     }
-
-    EitherT(rv)
   }
 
   private case class CountryInCsv(code: String, name: String)

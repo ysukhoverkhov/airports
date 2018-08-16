@@ -30,7 +30,7 @@ lazy val web = project
     version := "0.0.1-SNAPSHOT",
     settings,
     assemblySettings,
-    libraryDependencies ++= commonDependencies
+    libraryDependencies ++= webDependencies
   )
   .dependsOn(
     common
@@ -44,6 +44,7 @@ lazy val deps =
     val Http4sVersion = "0.18.14"
     val Specs2Version = "4.2.0"
     val LogbackVersion = "1.2.3"
+    val ScalaLoggingVersion = "3.9.0"
     val SimulacrumVersion = "0.13.0"
     val CSVParserVersion = "0.11.4"
     val ScoptVersion = "3.7.0"
@@ -52,22 +53,21 @@ lazy val deps =
 
 
 lazy val commonDependencies = Seq(
-  "org.http4s"           %% "http4s-blaze-server" % deps.Http4sVersion,
-  "org.http4s"           %% "http4s-circe"        % deps.Http4sVersion,
-  "org.http4s"           %% "http4s-dsl"          % deps.Http4sVersion,
-  "com.github.mpilquist" %% "simulacrum"          % deps.SimulacrumVersion,
-  "zamblauskas"          %% "scala-csv-parser"    % deps.CSVParserVersion,
-  "org.specs2"           %% "specs2-core"         % deps.Specs2Version % Test,
-  "org.specs2"           %% "specs2-scalacheck"   % deps.Specs2Version % Test,
-  "ch.qos.logback"       %  "logback-classic"     % deps.LogbackVersion,
-  "io.circe"             %% "circe-core"          % deps.CirceVersion,
-  "io.circe"             %% "circe-generic"       % deps.CirceVersion
+  "org.http4s"                 %% "http4s-blaze-server" % deps.Http4sVersion,
+  "org.http4s"                 %% "http4s-circe"        % deps.Http4sVersion,
+  "org.http4s"                 %% "http4s-dsl"          % deps.Http4sVersion,
+  "com.github.mpilquist"       %% "simulacrum"          % deps.SimulacrumVersion,
+  "zamblauskas"                %% "scala-csv-parser"    % deps.CSVParserVersion,
+  "org.specs2"                 %% "specs2-core"         % deps.Specs2Version % Test,
+  "org.specs2"                 %% "specs2-scalacheck"   % deps.Specs2Version % Test,
+  "ch.qos.logback"             %  "logback-classic"     % deps.LogbackVersion,
 )
 
-lazy val consoleDependencies = Seq(
-  "com.github.scopt"     %% "scopt"               % deps.ScoptVersion
+lazy val webDependencies = commonDependencies ++ Seq(
+  "com.typesafe.scala-logging" %% "scala-logging"       % deps.ScalaLoggingVersion,
+  "io.circe"                   %% "circe-core"          % deps.CirceVersion,
+  "io.circe"                   %% "circe-generic"       % deps.CirceVersion
 )
-
 
 
 // SETTINGS

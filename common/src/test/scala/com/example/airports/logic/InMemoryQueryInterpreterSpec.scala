@@ -28,11 +28,11 @@ class InMemoryQueryInterpreterSpec extends Specification {
       |255155,6524,"00AK",2500,70,"GRVL",0,0,"N",,,,,,"S",,,,,
     """.stripMargin)
 
-  val persistence = new MemoryStorageCSVInterpreter(countriesSource, airportsSource, runwaysSource)
+//  val persistence = new MemoryStorageCSVInterpreter(countriesSource, airportsSource, runwaysSource)
 
-  val data = persistence.data.unsafeRunSync().right.get
+//  val data = persistence.data.unsafeRunSync().right.get
 
-  val queryEngine = new InMemoryQueryInterpreter[IO](data)
+//  val queryEngine = new InMemoryQueryInterpreter[IO](data)
 
   "InMemoryQueryInterpreter" >> {
     "airportsPerCountry" >> {

@@ -22,11 +22,21 @@ Open the browser at `localhost:8080`
 - Property based tests where appropriate (to make sure particular algebras are defined on the whole domain)
 - No mocking library in tests (because they suck), dedicated implementations of various low level algebras instead
 
-### Limitations
+
+### API
+
+ - `/health/alive` - 200 - "OK" all the time  
+ - `/health/ready` - 200 - "OK" when data is read and service i ready to serve requests
+ - `/api/report/airports/<country>` - Query for airports pert country
+ - `/api/report/runways` - Query for runways types per countries
+ - `/api/report/topcountries` - Query for TOP and bottom countries per airports
+
+
+### Limitations / issues
 
 - Error handling is not verbose
 - CSV parser is super slow
-- Reports/Queries are performed on data in memory, so no handling for bigger data. But could be changed to any SQL/NoSQL easely
+- Reports/Queries are performed on data in memory, so no handling for bigger data. But could be changed to any SQL/NoSQL with easy
 - Property based tests mixed with unit tests, could not be suitable for large scale project
 - Elm project is injected in a hacky way (without proper sbt-web project)
 - Some version incompatibility in libs

@@ -8,7 +8,7 @@ class CsvSourceTextInterpreterSpec extends Specification with ScalaCheck {
 
   "CsvSourceTextInterpreter" >> {
     "Always returns passed text" >> {
-      Prop.forAll((a: String) => new SourceTextInterpreter(a).source.unsafeRunSync() == Right(a))
+      Prop.forAll((a: String) => new SourceTextInterpreter(a).source.value.unsafeRunSync() == Right(a))
     }
   }
 }

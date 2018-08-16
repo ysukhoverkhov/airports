@@ -8,11 +8,11 @@ class CsvSourceResourceInterpreterSpec extends Specification {
 
   "CsvSourceResourceInterpreter" >> {
     "Returns existing resource" >> {
-      new SourceResourceInterpreter(ExistingResource).source.unsafeRunSync() must beRight
+      new SourceResourceInterpreter(ExistingResource).source.value.unsafeRunSync() must beRight
     }
 
     "Does not return not existing resource" >> {
-      new SourceResourceInterpreter(NotExistingResource).source.unsafeRunSync() must beLeft
+      new SourceResourceInterpreter(NotExistingResource).source.value.unsafeRunSync() must beLeft
     }
   }
 }
