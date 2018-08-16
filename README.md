@@ -3,6 +3,15 @@
 The following tools are required:
 
 - `sbt`
+- `npm`
+
+
+### Install
+
+In the project's root folder, execute:
+
+- `npm install`
+- `npm run build`
 
 
 ### Run
@@ -36,6 +45,7 @@ Open the browser at `localhost:8080`
 
 ### Limitations / issues
 
+- UI is ugly (very!) 
 - Error handling is not verbose
 - CSV parser is super slow
 - Reports/Queries are performed on data in memory, so no handling for bigger data. But could be changed to any SQL/NoSQL with easy
