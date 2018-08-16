@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class StorageReadinessInterpreter(
   storage: MemoryStorageAlg[IO])(
-  implicit val ec: ExecutionContext) extends ReadinessAlg[IO] with StrictLogging {
+  implicit ec: ExecutionContext) extends ReadinessAlg[IO] with StrictLogging {
 
   private var ready = false
 

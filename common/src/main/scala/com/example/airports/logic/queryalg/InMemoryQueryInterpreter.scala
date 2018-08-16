@@ -9,7 +9,6 @@ import com.example.airports.logic.QueryResult.AirportPerCountry.{Airport, Runway
 import com.example.airports.logic.{QueryAlg, QueryResult}
 import com.example.airports.persistence.MemoryStorageAlg
 
-// TODO: write tests for me
 class InMemoryQueryInterpreter[F[_]](storage: MemoryStorageAlg[F])(implicit F: Applicative[F]) extends QueryAlg[F] {
 
   override def airportsPerCountry(query: String): EitherT[F, ErrorReason, AirportPerCountry] = {
@@ -32,12 +31,12 @@ class InMemoryQueryInterpreter[F[_]](storage: MemoryStorageAlg[F])(implicit F: A
     (country.code.toLowerCase == query.toLowerCase) || country.name.toLowerCase.contains(query.toLowerCase)
   }
 
-  override def topCountriesWithAirports: EitherT[F, ErrorReason, QueryResult.CountriesWithAirports] = {
+  override def topCountriesWithAirports(limit: Int): EitherT[F, ErrorReason, QueryResult.CountriesWithAirports] = {
     for {
       data <- storage.data
       airportsByCountry = data.airports.groupBy(_.countryCode).mapValues(_.size)
       sortedCountries = data.countries.sortBy(c => airportsByCountry.getOrElse(c.code, 0))
-      selectedCountries = (sortedCountries.take(10) ++ sortedCountries.takeRight(10)).reverse
+      selectedCountries = (sortedCountries.take(limit) ++ sortedCountries.takeRight(limit)).reverse
       resultCountries = selectedCountries.map { c =>
         QueryResult.CountriesWithAirports.CountryWithAirportCount(
           code = c.code,

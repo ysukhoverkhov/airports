@@ -10,20 +10,34 @@ import org.specs2.mutable.Specification
 // We need contract testing here (like with pact). But it's out of scope
 class AirportsServiceSpec extends Specification {
 
-  "Airports" >> {
-    "return 200 for correct date" >> {
-      uriReturns200()
+  "AirportsService" >> {
+    "airports for country" >> {
+      "return 200" >> {
+        uriReturns200("/airports/zim")
+      }
+    }
+
+    "top countries" >> {
+      "return 200" >> {
+        uriReturns200("report/topcountries")
+      }
+    }
+
+    "runways for countries" >> {
+      "return 200" >> {
+        uriReturns200("report/runways")
+      }
     }
   }
 
   private val application = new ApplicationInterpreterStub[IO]
   private val service = new AirportsService[IO](application).service
 
-  private val retQuery: Response[IO] = {
-    val get = Request[IO](Method.GET, Uri.uri("/airports/zim"))
+  private def httpQuery(uriString: String): Response[IO] = {
+    val get = Request[IO](Method.GET, Uri.fromString(uriString).right.get)
     service.orNotFound(get).unsafeRunSync()
   }
 
-  private def uriReturns200(): MatchResult[Status] =
-    retQuery.status must beEqualTo(Status.Ok)
+  private def uriReturns200(uri: String): MatchResult[Status] =
+    httpQuery(uri).status must beEqualTo(Status.Ok)
 }

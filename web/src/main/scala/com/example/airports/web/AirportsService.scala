@@ -22,7 +22,7 @@ class AirportsService[F[_]: Effect](application: ApplicationAlg[F]) extends Http
         }
 
       case GET -> Root / "report" / "topcountries" =>
-        application.topCountriesWithAirports.value.flatMap {
+        application.topCountriesWithAirports(Config.TopCountriesByAirportsLimit).value.flatMap {
           case Right(r) => Ok(r)
 
           // Needs better error handling - detect incorrect date format

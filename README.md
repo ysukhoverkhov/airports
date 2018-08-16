@@ -4,6 +4,7 @@ The following tools are required:
 
 - `sbt`
 
+
 ### Run
 
 In the project's root folder, execute:
@@ -11,6 +12,7 @@ In the project's root folder, execute:
 - `sbt web/run`
 
 Open the browser at `localhost:8080`
+
 
 ### Design considerations
 
@@ -25,11 +27,11 @@ Open the browser at `localhost:8080`
 
 ### API
 
- - `/health/alive` - 200 - "OK" all the time  
- - `/health/ready` - 200 - "OK" when data is read and service i ready to serve requests
- - `/api/report/airports/<country>` - Query for airports pert country
- - `/api/report/runways` - Query for runways types per countries
- - `/api/report/topcountries` - Query for TOP and bottom countries per airports
+ - `GET /health/alive` - 200 - "OK" all the time  
+ - `GET /health/ready` - 200 - "OK" when data is read and service is ready to serve requests
+ - `GET /api/airports/<country>` - Query for airports pert country
+ - `GET /api/report/runways` - Query for runways types per countries
+ - `GET /api/report/topcountries` - Query for TOP and bottom countries per airports
 
 
 ### Limitations / issues

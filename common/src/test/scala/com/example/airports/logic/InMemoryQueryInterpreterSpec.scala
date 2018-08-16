@@ -1,12 +1,55 @@
 package com.example.airports.logic
 
 import cats.effect.IO
+import com.example.airports.logic.QueryResult.{AirportPerCountry, CountriesWithAirports, RunwayTypesPerCountry}
+import com.example.airports.logic.QueryResult.AirportPerCountry.{Airport, Runway}
+import com.example.airports.logic.QueryResult.CountriesWithAirports.CountryWithAirportCount
+import com.example.airports.logic.QueryResult.RunwayTypesPerCountry.CountryWithRunwayType
 import com.example.airports.logic.queryalg.InMemoryQueryInterpreter
 import com.example.airports.persistence.memorystoragealg.MemoryStorageCSVInterpreter
 import com.example.airports.persistence.sourcealg.SourceTextInterpreter
 import org.specs2.mutable.Specification
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
+// These tests are incomplete. In production I'd add following tests
+// 1 for airports per country:
+// 1.1 Query for country without airports
+// 2 Top countries with airports
+// 2.1 Query with limit equal to 0
+// 2.2 Query with limit * 2 > than total amount of countries
+// 3 Runway types per country
+// 3.1 Would add more airports with more runways of the same type to make sure there are no duplicates of runway types per country
 class InMemoryQueryInterpreterSpec extends Specification {
+  "InMemoryQueryInterpreter" >> {
+    "airportsPerCountry" >> {
+      "with country code" >> {
+        val result = queryEngine.airportsPerCountry("AE").value.unsafeRunSync()
+        result === expectedAirports
+      }
+
+      "wth partial name" >> {
+        val result = queryEngine.airportsPerCountry("arab").value.unsafeRunSync()
+        result === expectedAirports
+      }
+
+      "with not existing country" >> {
+        val result = queryEngine.airportsPerCountry("name of the country which does not exist").value.unsafeRunSync()
+        result === expectedEmptyAirports
+      }
+    }
+
+    "topCountriesWithAirports" >> {
+      val result = queryEngine.topCountriesWithAirports(1).value.unsafeRunSync()
+      result === expectedCountriesWithAirports
+    }
+
+    "runwayTypesPerCountry" >> {
+      val result = queryEngine.runwayTypesPerCountry.value.unsafeRunSync()
+      result === expectedRunwayTypePerCountry
+    }
+  }
+
   val countriesSource = new SourceTextInterpreter(
     """
       |"id","code","name","continent","wikipedia_link","keywords"
@@ -28,17 +71,13 @@ class InMemoryQueryInterpreterSpec extends Specification {
       |255155,6524,"00AK",2500,70,"GRVL",0,0,"N",,,,,,"S",,,,,
     """.stripMargin)
 
-//  val persistence = new MemoryStorageCSVInterpreter(countriesSource, airportsSource, runwaysSource)
+  val storage = new MemoryStorageCSVInterpreter(countriesSource, airportsSource, runwaysSource)
+  val queryEngine = new InMemoryQueryInterpreter[IO](storage)
 
-//  val data = persistence.data.unsafeRunSync().right.get
+  val expectedAirports = Right(AirportPerCountry(List(Airport("Lowell Field", List(Runway("GRVL"))))))
+  val expectedEmptyAirports = Right(AirportPerCountry(List()))
 
-//  val queryEngine = new InMemoryQueryInterpreter[IO](data)
+  val expectedCountriesWithAirports = Right(CountriesWithAirports(List(CountryWithAirportCount("AE", "United Arab Emirates", 1), CountryWithAirportCount("AD", "Andorra", 1))))
 
-  "InMemoryQueryInterpreter" >> {
-    "airportsPerCountry" >> {
-      ok
-//      val result = queryEngine.airportsPerCountry("AE").unsafeRunSync()
-//      result === expectedAirports }
-    }
-  }
+  val expectedRunwayTypePerCountry = Right(RunwayTypesPerCountry(List(CountryWithRunwayType("AD", "Andorra", List("ASPH-G")), CountryWithRunwayType("AE", "United Arab Emirates", List("GRVL")))))
 }

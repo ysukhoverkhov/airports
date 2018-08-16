@@ -18,8 +18,8 @@ class ApplicationInterpreter[F[_]](
     runQuery[QueryResult.AirportPerCountry](queryEngine.airportsPerCountry(query))
   }
 
-  override def topCountriesWithAirports: EitherT[F, ErrorReason, Json] = {
-    runQuery[QueryResult.CountriesWithAirports](queryEngine.topCountriesWithAirports)
+  override def topCountriesWithAirports(limit: Int): EitherT[F, ErrorReason, Json] = {
+    runQuery[QueryResult.CountriesWithAirports](queryEngine.topCountriesWithAirports(limit))
   }
 
   override def runwayTypesPerCountry: EitherT[F, ErrorReason, Json] = {

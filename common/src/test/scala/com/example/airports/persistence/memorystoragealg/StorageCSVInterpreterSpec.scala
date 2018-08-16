@@ -3,6 +3,7 @@ package com.example.airports.persistence.memorystoragealg
 import com.example.airports.domain.{Airport, Country, Data, Runway}
 import com.example.airports.persistence.sourcealg.SourceTextInterpreter
 import org.specs2.mutable.Specification
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class StorageCSVInterpreterSpec extends Specification {
   val countryCsv = new SourceTextInterpreter(
@@ -32,12 +33,10 @@ class StorageCSVInterpreterSpec extends Specification {
     List(Runway("00A", "ASPH-G", "H1"), Runway("00AK", "GRVL", "N"))
   )
 
-  // TODO: fix me.
   "StorageCSVInterpreter" >> {
     "Parses countries" >> {
-      ok
-//      val result = new MemoryStorageCSVInterpreter(countryCsv, airportCsv, runwayCsv).data.unsafeRunSync()
-//      result must beLike { case Right(inv) => inv === expectedInventory }
+      val result = new MemoryStorageCSVInterpreter(countryCsv, airportCsv, runwayCsv).data.value.unsafeRunSync()
+      result must beLike { case Right(inv) => inv === expectedInventory }
     }
   }
 }

@@ -16,7 +16,7 @@ class MemoryStorageCSVInterpreter(
   countries: SourceAlg[IO],
   airports: SourceAlg[IO],
   runways: SourceAlg[IO])(
-    implicit private val ec: ExecutionContext
+    implicit ec: ExecutionContext
   ) extends MemoryStorageAlg[IO] {
 
   private val triggered = new AtomicBoolean(false)

@@ -6,6 +6,6 @@ import com.example.airports.logic.QueryResult._
 
 trait QueryAlg[F[_]] {
   def airportsPerCountry(query: String): EitherT[F, ErrorReason, AirportPerCountry]
-  def topCountriesWithAirports: EitherT[F, ErrorReason, CountriesWithAirports]
+  def topCountriesWithAirports(limit: Int): EitherT[F, ErrorReason, CountriesWithAirports]
   def runwayTypesPerCountry: EitherT[F, ErrorReason, RunwayTypesPerCountry]
 }

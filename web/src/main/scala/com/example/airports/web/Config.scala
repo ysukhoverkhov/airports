@@ -6,4 +6,6 @@ object Config {
   val CountriesResourceFile = "countries.csv"
   val AirportsResourceFile = "airports.csv"
   val RunwaysResourceFile = "runways.csv"
+
+  val TopCountriesByAirportsLimit = 10
 }
